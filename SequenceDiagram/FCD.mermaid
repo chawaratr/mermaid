@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant C as ลูกค้า/ATM ญี่ปุ่น
+    participant A as Acquirer
+    participant T as KBANK Tandem (Gateway)
+    participant M as Midway ATM
+    participant E as CCMS (บัญชีลูกค้า)
+    participant F as FX System
+    participant G as KBank FCD Account
+    
+    %% 1. ลูกค้าเริ่มทำรายการ
+    C->>A: 1. ถอนเงิน 10,000 JPY
+    
+    %% 2-3. ส่งรายการเข้า KBANK
+    A->>T: 2. Request (DE4=JPY, DE49=JPY)
+    T->>M: 3. ส่งรายการต่อ
+    
+    %% 4-7. การประมวลผลภายใน (Authorization)
+    
+    note over M,G: ภายใน: ตรวจสอบและตัดบัญชี JPY
+    
+    M->>E: 4. ขอเลขบัญชี FCD (JPY)
+    E-->>M: 5. ส่งเลขบัญชี JPY
+    
+    M->>F: 6. เรียกหา FX Rate
+    F-->>M: 6.1. ส่ง FX Rate
+    
+    M->>G: 7. ตัดเงิน 10,000 JPY
+    G-->>M: 7.1. Approval/ยอดเงิน
+    
+    %% 8. การจัดการวงเงิน
+    M->>E: 8. Confirm ใช้วงเงิน (THB)
+    
+    %% 9-11. ส่งผลลัพธ์กลับ
+    M->>T: 9. Approve รายการ
+    T->>A: 10. Response Approve
+    A->>C: 11. จ่ายเงิน JPY ให้ลูกค้า
