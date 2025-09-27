@@ -1,0 +1,21 @@
+---
+config:
+  theme: redux-color
+  look: neo
+---
+sequenceDiagram
+    participant KPlus
+    participant S1
+    participant PD_Teller
+    participant EAI
+    participant CVRS
+    participant CCMS
+    S1->>PD_Teller: Request to issue ATM Debit Card
+    PD_Teller->>EAI: Send CIS ID
+    KPlus->>EAI: Request to issue ATM Debit Card (with CIS ID)
+    EAI->>CVRS: Query Customer Tier with CIS ID
+    CVRS-->>EAI: Return Customer Tier
+    EAI->>CCMS: Issue ATM Debit Card with Tier Info
+    CCMS-->>EAI: Return result
+    EAI-->>S1: Return result 
+    EAI-->>KPlus: Return result
